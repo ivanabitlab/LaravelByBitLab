@@ -21,6 +21,11 @@
             <main>
                 <div class="container-fluid px-4">
                     <h1 class="mt-4">@yield('title')</h1>
+                    @if (session()->has('success'))
+                    <div class="alert alert-success">
+                        {{session('success')}}
+                    </div>
+                    @endif
                     @yield('content')
                 </div>
             </main>

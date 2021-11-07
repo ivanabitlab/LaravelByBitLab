@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
 
@@ -29,3 +30,12 @@ Route::resource('posts', PostController::class);
 // Route::put('/posts/{post}', [PostController::class, 'update'])->name('posts.update');
 // Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
 // Route::get('/posts/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
+
+
+Route::middleware(['guest'])->group(function () {
+    Route::get('/registration', [AuthController::class,'registration'])->name('registration.show');
+    Route::post('/registration', [AuthController::class,'store'])->name('registration.store');
+    Route::get('/login', [AuthController::class,'login'])->name('login');
+    Route::post('/login', [AuthController::class,'sessionStore'])->name('login.post');
+});
+Route::get('/logout', [AuthController::class,'logout'])->name('logout')->middleware(['auth']);

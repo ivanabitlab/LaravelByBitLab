@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth')->except('show');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -99,7 +104,9 @@ class PostController extends Controller
         $post->published_at = $request->published_at;
 
         $post->save();
-        return redirect('/posts');
+        //postavlja poruku koja vazi samo 1 request, osim ako se ne obnovi (flash i with rade isto)
+        //$request->session()->flash('success','Uspešno ste izmenili članak');
+        return redirect('/posts')->with('success','Uspešno ste izmenili članak');
     }
 
     /**
