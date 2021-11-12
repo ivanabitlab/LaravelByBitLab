@@ -50,4 +50,9 @@ class User extends Authenticatable
         //moze i ovako
         //$this->attributes['password'] = Hash::make($password);
     }
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
 }

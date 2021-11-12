@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
@@ -20,7 +22,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::all();
+        $posts = Auth::user()->posts;
         return view('posts.index', compact('posts'));
     }
 
@@ -31,7 +33,8 @@ class PostController extends Controller
      */
     public function create()
     {
-        return view('posts.create');
+        $categories = Category::all();
+        return view('posts.create', compact('categories'));
     }
 
     /**
@@ -50,12 +53,14 @@ class PostController extends Controller
 
         $path = $request->file('image')->store('featured_images','public');
         $post = new Post();
+        $post->user_id = auth()->id();
         $post->title = $request->title;
         $post->body = $request->body;
         $post->featured_image = $path;
         $post->published_at = $request->published_at;
-
         $post->save();
+        $post->categories()->attach($request->categories);
+
         return redirect('/posts');
     }
 
@@ -78,7 +83,8 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-        return view('posts.edit', compact('post'));
+        $categories = Category::all();
+        return view('posts.edit', compact('post','categories'));
     }
 
     /**
@@ -104,6 +110,7 @@ class PostController extends Controller
         $post->published_at = $request->published_at;
 
         $post->save();
+        $post->categories()->sync($request->categories);
         //postavlja poruku koja vazi samo 1 request, osim ako se ne obnovi (flash i with rade isto)
         //$request->session()->flash('success','Uspešno ste izmenili članak');
         return redirect('/posts')->with('success','Uspešno ste izmenili članak');

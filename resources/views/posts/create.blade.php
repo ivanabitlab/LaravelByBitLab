@@ -36,12 +36,23 @@ Novi članak
                         <input type="file" name="image" class="form-control">
                     </div>
 
+                    @if($categories->isNotEmpty())
+                    <div class="form-group">
+                        <label for="">Kategorija</label>
+                        <select name="categories[]" class="form-select" size="3" multiple>
+                            @foreach($categories as $category)
+                            <option value="{{$category->id}}" >{{$category->title}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @endif
+
                     <div class="form-group">
                         <label for="">Vreme objavljivanja</label>
                         <input type="datetime-local" name="published_at" class="form-control">
                     </div>
 
-                    <button type="submit" class="btn btn-primary">Sačuvaj</button>
+                    <button type="submit" class="btn btn-primary form-control mt-2">Sačuvaj</button>
                 </form>
 
             </div>

@@ -54,7 +54,7 @@
                                     </form>
                                 </div>
                                 <div class="card-footer text-center py-3">
-                                    <div class="small"><a href="/registration">Želite nalog? Pridružite se!</a></div>
+                                    <div class="small"><a href="/registration">Nemate nalog? Pridružite se!</a></div>
                                 </div>
                             </div>
                         </div>
