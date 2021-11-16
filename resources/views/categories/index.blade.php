@@ -9,12 +9,13 @@ Sve kategorije
             <div class="col-12">
                 <a href="categories/create" class="btn btn-primary btn-sm mb-2">Nova kategorija</a>
                 <br>
+                @if($categories->isNotEmpty())
                 <table class="table table-bordered">
                     <thead>
                         <tr>
                             <th>Ime</th>
                             <th>Broj postova u kategoriji</th>
-                            <th colspan="2"></th>
+                            <th> Akcija</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -35,6 +36,9 @@ Sve kategorije
                         @endforeach
                     </tbody>
                 </table>
+                @else
+                Još uvek nema kategorija!
+                @endif
             </div>
         </div>
     </div>

@@ -31,6 +31,16 @@ Uredi članak
                         <textarea name="body" id="" cols="30" rows="10" class="form-control">{{$post->body}}</textarea>
                     </div>
 
+                    @can('edit posts')
+                    <div class="form-group">
+                        <label for="">Autor</label>
+                        <select name="author" class="form-select">
+                            @foreach($authors as $author)
+                            <option value="{{$author->id}}" @if($post->user_id == $author->id)selected @endif >{{$author->username}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @endcan
                     <div class="form-group">
                         <label for="">Naslovna fotografija</label>
                         <input type="file" name="image" class="form-control">

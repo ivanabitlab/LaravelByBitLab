@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Post;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -13,7 +14,9 @@ class PostController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth')->except('show');
+        $this->middleware('auth')->only('index');
+        $this->middleware('permission:create posts')->only(['create', 'store']);
+        $this->middleware('author.or.editor')->only(['edit', 'update', 'destroy']);
     }
     /**
      * Display a listing of the resource.
@@ -22,7 +25,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Auth::user()->posts;
+        $posts = Auth::user()->posts->load('categories:title');
         return view('posts.index', compact('posts'));
     }
 
@@ -49,9 +52,9 @@ class PostController extends Controller
             'title' => 'required',
             'body' => 'required',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            ]);
+        ]);
 
-        $path = $request->file('image')->store('featured_images','public');
+        $path = $request->file('image')->store('featured_images', 'public');
         $post = new Post();
         $post->user_id = auth()->id();
         $post->title = $request->title;
@@ -84,7 +87,8 @@ class PostController extends Controller
     public function edit(Post $post)
     {
         $categories = Category::all();
-        return view('posts.edit', compact('post','categories'));
+        $authors = User::permission('create posts')->get();
+        return view('posts.edit', compact('post', 'categories','authors'));
     }
 
     /**
@@ -99,21 +103,24 @@ class PostController extends Controller
         $request->validate([
             'title' => 'required',
             'body' => 'required',
-            ]);
-        if(isset($request->image)){
-            Storage::delete('public/'.$post->featured_image);
-            $path = $request->file('image')->store('featured_images','public');
+        ]);
+        if (isset($request->image)) {
+            Storage::delete('public/' . $post->featured_image);
+            $path = $request->file('image')->store('featured_images', 'public');
             $post->featured_image = $path;
         }
         $post->title = $request->title;
         $post->body = $request->body;
         $post->published_at = $request->published_at;
-
+        if(isset($request->author)){
+            $post->user_id = $request->author;
+        }
         $post->save();
         $post->categories()->sync($request->categories);
+        
         //postavlja poruku koja vazi samo 1 request, osim ako se ne obnovi (flash i with rade isto)
         //$request->session()->flash('success','Uspešno ste izmenili članak');
-        return redirect('/posts')->with('success','Uspešno ste izmenili članak');
+        return redirect()->back()->with('success', 'Uspešno ste izmenili članak');
     }
 
     /**
@@ -124,8 +131,14 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        Storage::delete('public/'.$post->featured_image);
+        Storage::delete('public/' . $post->featured_image);
         $post->delete();
         return redirect()->back();
+    }
+
+    public function allPostsForEditors()
+    {
+        $posts = Post::where('user_id', '!=', Auth::user()->id)->get();
+        return view('posts.index', compact('posts'));
     }
 }

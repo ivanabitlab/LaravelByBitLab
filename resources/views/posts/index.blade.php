@@ -1,26 +1,45 @@
 @extends('layout.user-layout')
 @section('title')
+@if($myPosts = Route::currentRouteName() == 'posts.index' )
+Moji članci
+@else
 Svi članci
+@endif
+
 @endsection
 @section('content')
 <div class="card mb-4">
     <div class="card-body">
         <div class="row justify-content-center">
             <div class="col-12">
+                @can('create posts')
+                @if($myPosts)
                 <a href="posts/create" class="btn btn-primary btn-sm mb-2">Novi post</a>
                 <br>
+                @endif
+                @if($posts->isNotEmpty())
                 <table class="table table-bordered">
                     <thead>
                         <tr>
                             <th>Naslov</th>
+                            @if(!$myPosts)
+                            <th>Autor</th>
+                            @endif
+                            <th>Kategorije</th>
                             <th>Kreirano</th>
-                            <th colspan="2"></th>
+                            <th>Akcija</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($posts as $post)
                         <tr>
                             <td>{{ $post->title }}</td>
+                            @if(!$myPosts)
+                            <td>{{ $post->user->username }}</td>
+                            @endif
+                            <td>
+                                {{implode(', ',$post->categories->pluck('title')->toArray())}}
+                            </td>
                             <td>{{ date('d-m-Y', strtotime($post->created_at)) }}</td>
                             <td>
                                 <a href="posts/{{$post->id}}" class="btn btn-primary btn-sm">Prikaži</a>
@@ -35,6 +54,12 @@ Svi članci
                         @endforeach
                     </tbody>
                 </table>
+                @else
+                Nema postova za prikaz!
+                @endif
+                @else
+                Dobro došli. Dok čekate da Vam administrator sajta odobri objavljivanje postova, pogledate <a href="/">članke</a> koji su vec na sajtu i ostavite svoj komentar.
+                @endcan
             </div>
         </div>
     </div>

@@ -9,7 +9,7 @@ class CategoryController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth')->except('show');
+        $this->middleware('permission:edit categories')->except('show');
     }
 
     /**
