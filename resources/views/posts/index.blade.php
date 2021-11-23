@@ -26,6 +26,7 @@ Svi članci
                             <th>Autor</th>
                             @endif
                             <th>Kategorije</th>
+                            <th>Objavljeno</th>
                             <th>Kreirano</th>
                             <th>Akcija</th>
                         </tr>
@@ -40,6 +41,7 @@ Svi članci
                             <td>
                                 {{implode(', ',$post->categories->pluck('title')->toArray())}}
                             </td>
+                            <td>{{ $post->published_at?date('d-m-Y', strtotime($post->published_at)):"nije postavljeno" }}</td>
                             <td>{{ date('d-m-Y', strtotime($post->created_at)) }}</td>
                             <td>
                                 <a href="posts/{{$post->id}}" class="btn btn-primary btn-sm">Prikaži</a>
@@ -64,4 +66,5 @@ Svi članci
         </div>
     </div>
 </div>
+{{ $posts->links() }}
 @endsection

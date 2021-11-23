@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
+use App\Models\Post;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 
@@ -16,13 +19,20 @@ class UserController extends Controller
 
     public function index()
     {
-        $users = User::withCount('posts')->get();
+        $users = User::withCount('posts')->simplePaginate(10);
         $roles = Role::all();
         return view('user.index', compact('users', 'roles'));
     }
 
-    public function show(User $user)
+    public function show(User $user, Request $request)
     {
+        $posts = Post::where('user_id',$user->id)->where('title','LIKE','%'.$request->search.'%')
+        ->where('published_at', '<=', Carbon::now()->toDateTimeString())
+        ->orderBy('published_at','desc')->paginate(9);
+        
+        $categories = Category::has('posts')->get();
+        $authors = User::has('posts')->get();
+        return view('blog.home', compact('user','posts','categories','authors'));
     }
 
     public function destroy(User $user)

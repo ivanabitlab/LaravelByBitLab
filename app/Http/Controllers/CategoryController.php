@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -55,9 +57,15 @@ class CategoryController extends Controller
      * @param  \App\Models\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function show(Category $category)
+    public function show(Category $category, Request $request)
     {
-        //
+        $posts = $category->posts()->where('title','LIKE','%'.$request->search.'%')
+        ->where('published_at', '<=', Carbon::now()->toDateTimeString())
+        ->orderBy('published_at','desc')->paginate(9);
+        
+        $categories = Category::has('posts')->get();
+        $authors = User::has('posts')->get();
+        return view('blog.home', compact('category','posts','categories','authors'));
     }
 
     /**

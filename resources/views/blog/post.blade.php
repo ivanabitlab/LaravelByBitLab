@@ -6,21 +6,7 @@
 
 <body style="font-family: Open Sans, sans-serif">
     <section class="px-6 py-8">
-        <nav class="md:flex md:justify-between md:items-center">
-            <div>
-                <a href="/">
-                    <img src="/images/logo.svg" alt="Laracasts Logo" width="165" height="16">
-                </a>
-            </div>
-
-            <div class="mt-8 md:mt-0">
-                <a href="/" class="text-xs font-bold uppercase">Home Page</a>
-
-                <a href="#" class="transition-colors duration-300 bg-blue-500 hover:bg-blue-600 ml-3 rounded-full text-xs font-semibold text-white uppercase py-3 px-5">Subscribe
-                    for Updates</a>
-            </div>
-        </nav>
-
+        @include('blog.nav')
         <main class="max-w-6xl mx-auto mt-10 lg:mt-20 space-y-6">
             <article class="max-w-4xl mx-auto lg:grid lg:grid-cols-12 gap-x-10">
                 <div class="col-span-4 lg:text-center lg:pt-14 mb-10">
@@ -33,7 +19,7 @@
                     <div class="flex items-center lg:justify-center text-sm mt-4">
                     <img src="/images/lary-avatar.svg" alt="Lary avatar">
                         <div class="ml-3 text-left">
-                            <h5 class="font-bold">{{$post->user->username}}</h5>
+                            <h5 class="font-bold"><a href="/users/{{$post->user->id}}">{{$post->user->username}}</a></h5>
                             <h6>Autor članka</h6>
                         </div>
                     </div>
@@ -71,29 +57,6 @@
                 </div>
             </article>
         </main>
-
-        <footer class="bg-gray-100 border border-black border-opacity-5 rounded-xl text-center py-16 px-10 mt-16">
-            <img src="/images/lary-newsletter-icon.svg" alt="" class="mx-auto -mb-6" style="width: 145px;">
-            <h5 class="text-3xl">Stay in touch with the latest posts</h5>
-            <p class="text-sm">Promise to keep the inbox clean. No bugs.</p>
-
-            <div class="mt-10">
-                <div class="relative inline-block mx-auto lg:bg-gray-200 rounded-full">
-                    <form method="POST" action="#" class="lg:flex text-sm">
-                        <div class="lg:py-3 lg:px-5 flex items-center">
-                            <label for="email" class="hidden lg:inline-block">
-                                <img src="/images/mailbox-icon.svg" alt="mailbox letter">
-                            </label>
-
-                            <input id="email" type="text" placeholder="Your email address" class="lg:bg-transparent pl-4 focus-within:outline-none">
-                        </div>
-
-                        <button type="submit" class="transition-colors duration-300 bg-blue-500 hover:bg-blue-600 mt-4 lg:mt-0 lg:ml-3 rounded-full text-xs font-semibold text-white uppercase py-3 px-8">
-                            Subscribe
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </footer>
+        @include('blog.footer')
     </section>
 </body>

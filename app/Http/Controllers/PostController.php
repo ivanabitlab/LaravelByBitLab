@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -14,9 +15,20 @@ class PostController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth')->only('index');
+        $this->middleware('auth')->only('index','allPostsForEditors');
         $this->middleware('permission:create posts')->only(['create', 'store']);
         $this->middleware('author.or.editor')->only(['edit', 'update', 'destroy']);
+    }
+
+    public function blog(Request $request)
+    {
+        $posts = Post::where('title','LIKE','%'.$request->search.'%')
+        ->where('published_at', '<=', Carbon::now()->toDateTimeString())
+        ->orderBy('published_at','desc')->paginate(9);
+  
+        $categories = Category::has('posts')->get();
+        $authors = User::has('posts')->get();
+        return view('blog.home', compact('posts','categories','authors'));
     }
     /**
      * Display a listing of the resource.
@@ -25,7 +37,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Auth::user()->posts->load('categories:title');
+        $posts = Auth::user()->posts()->simplePaginate(10);
         return view('posts.index', compact('posts'));
     }
 
@@ -75,7 +87,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        return view('post', compact('post'));
+        return view('blog.post', compact('post'));
     }
 
     /**
@@ -138,7 +150,7 @@ class PostController extends Controller
 
     public function allPostsForEditors()
     {
-        $posts = Post::where('user_id', '!=', Auth::user()->id)->get();
+        $posts = Post::where('user_id', '!=', Auth::user()->id)->orderBy('published_at','desc')->simplePaginate(10);
         return view('posts.index', compact('posts'));
     }
 }

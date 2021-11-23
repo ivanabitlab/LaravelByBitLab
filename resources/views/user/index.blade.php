@@ -59,4 +59,5 @@ Korisnici CMSa
         </div>
     </div>
 </div>
+{{ $users->links() }}
 @endsection

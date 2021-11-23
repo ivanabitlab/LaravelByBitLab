@@ -59,7 +59,7 @@ Uredi članak
 
                     <div class="form-group">
                         <label for="">Vreme objavljivanja</label>
-                        <input type="datetime-local" name="published_at" class="form-control" value="{{ date('Y-m-d\TH:i:s', strtotime($post->published_at)) }}">
+                        <input type="datetime-local" name="published_at" class="form-control" value="@if(isset($post->published_at)){{ date('Y-m-d\TH:i:s', strtotime($post->published_at)) }}@endif">
                     </div>
 
                     <button type="submit" class="btn btn-primary">Izmeni</button>

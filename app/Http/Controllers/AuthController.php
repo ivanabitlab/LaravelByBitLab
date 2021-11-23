@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\NewUserRegistred;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -47,7 +49,9 @@ class AuthController extends Controller
             'password' => 'required|confirmed|min:7|max:255',
         ]);
 
-        User::create($attributes);
+        $user = User::create($attributes);
+        Mail::to('admin@cms.com')->send(new NewUserRegistred($user));
+
         return redirect('/login')->with('message','Uspešno ste kreirali nalog.');
         //ako zelite da je User ulogovan po registraciji, zakomentarisiste gornju liniju koda, a otkomentarisite sledece 2
         // Auth::attempt($attributes);
